@@ -1,7 +1,33 @@
 # AI Safety Glossary
 
-Plain-language definitions of the terms that matter in AI safety — what each one means, and **why it matters**.
+Plain-language definitions of the terms that matter in AI safety — what each one means, **why it matters**, sources to learn more, and the people who work on it.
 
-48 terms across five areas: Alignment, Interpretability, Robustness, Governance, and Multi-Agent. Live search, category filters, and cross-links between related terms.
+A React + Vite app. Home is a searchable, filterable glossary; each term has its own detail page with a full write-up, links, and key people.
 
-A personal initiative (draft sample). Live page: see the repository's GitHub Pages URL.
+**Live:** https://mamoro98.github.io/ai-safety-glossary/
+
+## Develop
+
+```bash
+npm install
+npm run dev      # local dev server
+npm run build    # production build to dist/
+```
+
+## Content
+
+All terms live in `src/data/entries.json`. Each entry:
+
+```json
+{
+  "term": "...", "slug": "...", "cat": "alignment|interpretability|robustness|governance|multiagent",
+  "aka": "", "def": "...", "why": "", "rel": ["..."],
+  "links": [{ "title": "...", "url": "...", "type": "paper|blog|org|wiki|course|video|other" }],
+  "people": [{ "name": "...", "affiliation": "..." }],
+  "conf": "high|medium|low"
+}
+```
+
+Add a term = add an object to that file. Deployment is automatic on push to `main` via GitHub Actions.
+
+A personal initiative — draft.
