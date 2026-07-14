@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Plain-language AI Safety Glossary: what each term means and why it matters.">
+<title>AI Safety Glossary</title>
+<style>
+  :root {
+    --ground: #F3F4F7;
+    --surface: #FFFFFF;
+    --ink: #16191F;
+    --muted: #5B6472;
+    --faint: #8A93A2;
+    --line: #E1E4EA;
+    --line-strong: #CDD2DB;
+    --accent: #2440C4;
+    --accent-soft: #EAEDFB;
+
+    --cat-alignment: #4B3FB8;
+    --cat-interpretability: #0E7C7B;
+    --cat-robustness: #B4531F;
+    --cat-governance: #8A3B8F;
+    --cat-multiagent: #2E7D46;
+
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    --maxw: 860px;
+  }
+
+  * { box-sizing: border-box; }
+
+  .page {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    padding: 0 20px 96px;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; }
+
+  /* ---- header ---- */
+  header.masthead {
+    padding: 64px 0 28px;
+    border-bottom: 2px solid var(--ink);
+    animation: rise .6s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--faint);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .eyebrow .dot { color: var(--accent); }
+  h1.title {
+    font-size: clamp(2.3rem, 6vw, 3.4rem);
+    line-height: 1.02;
+    letter-spacing: -.02em;
+    font-weight: 780;
+    margin: 18px 0 14px;
+    text-wrap: balance;
+  }
+  .lede {
+    font-size: 1.075rem;
+    color: var(--muted);
+    max-width: 60ch;
+    margin: 0;
+  }
+  .lede b { color: var(--ink); font-weight: 640; }
+
+  /* ---- controls ---- */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: color-mix(in srgb, var(--ground) 92%, transparent);
+    backdrop-filter: blur(8px);
+    padding: 18px 0 14px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    padding: 11px 14px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .search:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .search svg { flex: none; color: var(--faint); }
+  .search input {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 1rem;
+    color: var(--ink);
+    width: 100%;
+  }
+  .search input::placeholder { color: var(--faint); }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .chip {
+    font-family: var(--mono);
+    font-size: .74rem;
+    letter-spacing: .02em;
+    padding: 6px 11px 6px 10px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .chip:hover { border-color: var(--faint); }
+  .chip .swatch {
+    width: 8px; height: 8px; border-radius: 2px;
+    background: var(--c, var(--faint));
+  }
+  .chip .n { color: var(--faint); font-size: .68rem; }
+  .chip[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+  .chip[aria-pressed="true"] .n { color: #aeb6c4; }
+
+  .count {
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin: 20px 2px 4px;
+  }
+
+  /* ---- entries ---- */
+  .list { list-style: none; padding: 0; margin: 0; }
+  .entry {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-top: 12px;
+    animation: rise .5s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .entry.hidden { display: none; }
+
+  .entry-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .term { font-size: 1.32rem; font-weight: 700; letter-spacing: -.01em; }
+  .aka { font-weight: 500; color: var(--faint); font-size: .98rem; }
+  .tag {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 4px 9px;
+    border-radius: 6px;
+    color: var(--tc, var(--muted));
+    background: color-mix(in srgb, var(--tc, var(--muted)) 11%, transparent);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .tag .swatch { width: 7px; height: 7px; border-radius: 2px; background: var(--tc); }
+
+  .def { margin: 13px 0 0; color: #262b34; }
+
+  .why {
+    margin-top: 13px;
+    padding-top: 13px;
+    border-top: 1px dashed var(--line-strong);
+    font-size: .95rem;
+    color: var(--muted);
+  }
+  .why b {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .related {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .related .rlabel {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .rlink {
+    font-family: var(--mono);
+    font-size: .76rem;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--muted);
+    padding: 3px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .rlink:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+
+  .empty {
+    text-align: center;
+    color: var(--faint);
+    font-family: var(--mono);
+    font-size: .85rem;
+    padding: 48px 0;
+    display: none;
+  }
+  .empty.show { display: block; }
+
+  footer {
+    margin-top: 44px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: var(--faint);
+    letter-spacing: .03em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="page">
+  <div class="wrap">
+
+    <header class="masthead">
+      <div class="eyebrow">
+        <span class="dot">◆</span>
+        <span>Personal Initiative</span>
+        <span>·</span>
+        <span>Draft Sample v0.2</span>
+        <span>·</span>
+        <span>48 terms</span>
+      </div>
+      <h1 class="title">The AI Safety Glossary</h1>
+      <p class="lede">Plain-language definitions of the terms that actually matter in AI safety &mdash; what each one means, and <b>why it matters</b>. Built to be more useful on safety than the generic AI glossaries out there. This is a sample across five areas; the full index will go deeper.</p>
+    </header>
+
+    <div class="controls">
+      <label class="search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" type="search" placeholder="Search terms and definitions&hellip;" autocomplete="off" aria-label="Search glossary">
+      </label>
+      <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+    </div>
+
+    <div class="count" id="count"></div>
+    <ul class="list" id="list"></ul>
+    <div class="empty" id="empty">No terms match that filter.</div>
+
+    <footer>
+      <span>AI SAFETY GLOSSARY · SAMPLE</span>
+      <span>DEFINITIONS + WHY-IT-MATTERS · CROSS-LINKED</span>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+  const CATS = {
+    alignment:        { label: "Alignment",         c: "var(--cat-alignment)" },
+    interpretability: { label: "Interpretability",  c: "var(--cat-interpretability)" },
+    robustness:       { label: "Robustness",        c: "var(--cat-robustness)" },
+    governance:       { label: "Governance",         c: "var(--cat-governance)" },
+    multiagent:       { label: "Multi-Agent",        c: "var(--cat-multiagent)" },
+  };
+
+  const ENTRIES = [
+    { term: "Adversarial Example", cat: "robustness",
+      def: "An input deliberately perturbed to make a model fail, often with changes too small for a human to notice. A few altered pixels can flip a confident classification.",
+      why: "Clean-data accuracy overstates reliability. It shows models can be brittle in exactly the ways an attacker will probe.",
+      rel: ["Jailbreak", "Distribution Shift", "Red Teaming"] },
+
+    { term: "Alignment", cat: "alignment",
+      def: "Making an AI system pursue the goals its designers actually intend, not just the ones they managed to write down. An aligned system does what we mean, stays honest, and doesn't drift toward a convenient proxy as it gets more capable.",
+      why: "Almost every other safety problem is a special case of a system optimizing for the wrong target.",
+      rel: ["Reward Hacking", "Mesa-Optimization", "Corrigibility"] },
+
+    { term: "Compute Governance", cat: "governance",
+      def: "Governing AI through its physical inputs &mdash; the chips and data-center compute needed to train frontier models. Compute is measurable, excludable, and concentrated in few hands, which makes it a rare enforceable lever.",
+      why: "Most AI policy is hard to monitor. Hardware is something you can actually count and control.",
+      rel: ["Responsible Scaling Policy", "Dangerous Capability Evals"] },
+
+    { term: "Corrigibility", cat: "alignment",
+      def: "A system's willingness to be corrected, shut down, or overridden by humans without resisting &mdash; not fighting its off-switch or manipulating operators to keep itself running.",
+      why: "It's the fallback if alignment fails. A corrigible system stays under human control even when it's wrong.",
+      rel: ["Alignment", "Mesa-Optimization"] },
+
+    { term: "Dangerous Capability Evals", cat: "governance", aka: "Evals",
+      def: "Structured tests measuring whether a model can do something genuinely dangerous &mdash; help build a weapon, autonomously find and exploit vulnerabilities, or copy itself onto new machines.",
+      why: "They're the evidence base for deployment decisions and for policy thresholds like 'don't ship past this line'.",
+      rel: ["Red Teaming", "Responsible Scaling Policy"] },
+
+    { term: "Distribution Shift", cat: "robustness",
+      def: "When the data a model meets in the real world differs from its training data, so performance quietly degrades without any obvious error.",
+      why: "Safety measured on a test set doesn't automatically hold once the world stops looking like that test set.",
+      rel: ["Adversarial Example", "Alignment"] },
+
+    { term: "Emergent Collusion", cat: "multiagent",
+      def: "When multiple agents learn to coordinate for mutual benefit in ways nobody specified &mdash; for example pricing bots that tacitly settle on keeping prices high without ever being told to.",
+      why: "Harmful group behavior can appear even when every individual agent is behaving exactly as designed.",
+      rel: ["Multi-Agent Safety", "Information Asymmetry"] },
+
+    { term: "Information Asymmetry", cat: "multiagent",
+      def: "When agents in a system have unequal access to information. Who knows what shapes cooperation, trust, and the openings available to a malicious agent hiding in the group.",
+      why: "Transparency between agents cuts both ways: it can enable cooperation or leak private data straight to an adversary.",
+      rel: ["Multi-Agent Safety", "Emergent Collusion"] },
+
+    { term: "Jailbreak", cat: "robustness",
+      def: "A prompt crafted to bypass a model's safety training and get it to produce something it was trained to refuse.",
+      why: "It's a live pressure test of alignment. Recurring jailbreaks are evidence that safety fine-tuning is often shallow.",
+      rel: ["Adversarial Example", "Red Teaming", "RLHF"] },
+
+    { term: "Mechanistic Interpretability", cat: "interpretability",
+      def: "Reverse-engineering the internal computations of a neural network into human-understandable algorithms &mdash; reading the actual circuits instead of treating the model as a black box.",
+      why: "If we can see what a model is doing inside, we can catch deception or dangerous reasoning that behavior alone hides.",
+      rel: ["Superposition", "Probing"] },
+
+    { term: "Mesa-Optimization", cat: "alignment", aka: "Inner Alignment",
+      def: "When a trained model grows its own internal optimizer with its own goal, which may not match the goal it was trained on. Outer alignment is picking the right training objective; inner alignment is making sure the model actually adopts it.",
+      why: "A model can look perfect in training yet pursue a different goal once deployed.",
+      rel: ["Alignment", "Corrigibility"] },
+
+    { term: "Multi-Agent Safety", cat: "multiagent",
+      def: "The study of risks that come from many AI agents interacting rather than from one model alone &mdash; miscoordination, conflict, collusion, and behavior no single agent was designed to produce.",
+      why: "Real deployments are becoming populations of agents, and system-level failures don't reduce to single-agent alignment.",
+      rel: ["Emergent Collusion", "Information Asymmetry"] },
+
+    { term: "Probing", cat: "interpretability",
+      def: "Training a small, simple classifier on a model's internal activations to test whether some piece of information &mdash; sentiment, truthfulness, a plan &mdash; is actually represented in there.",
+      why: "A lightweight way to check what a model 'knows' internally versus what it chooses to say.",
+      rel: ["Mechanistic Interpretability", "Superposition"] },
+
+    { term: "Red Teaming", cat: "governance",
+      def: "Systematically attacking your own system to find failures before adversaries or ordinary users do &mdash; hunting for harmful outputs, jailbreaks, and misuse paths.",
+      why: "Standard practice for surfacing risks while you can still fix them, before deployment.",
+      rel: ["Jailbreak", "Dangerous Capability Evals"] },
+
+    { term: "Responsible Scaling Policy", cat: "governance", aka: "RSP",
+      def: "A commitment framework where a developer defines capability thresholds in advance and the specific safety measures required before training or deploying past each one.",
+      why: "It ties scaling decisions to demonstrated safety rather than to competitive pace.",
+      rel: ["Dangerous Capability Evals", "Compute Governance"] },
+
+    { term: "Reward Hacking", cat: "alignment", aka: "Specification Gaming",
+      def: "When a system scores high on its objective without doing the thing the objective was meant to capture. The classic case: a boat-racing agent that loops forever collecting points instead of finishing the race.",
+      why: "A reward function is only a proxy, and a capable optimizer will exploit the gap between the proxy and what you meant.",
+      rel: ["Alignment", "RLHF", "Mesa-Optimization"] },
+
+    { term: "RLHF", cat: "alignment", aka: "Reinforcement Learning from Human Feedback",
+      def: "A training method where humans rank model outputs, those rankings train a reward model, and the reward model then fine-tunes the system toward preferred behavior. It's how most chat assistants are made helpful and less harmful.",
+      why: "It's the front-line alignment technique today &mdash; but it only aligns to what raters can judge, so it can teach a model to sound right rather than be right.",
+      rel: ["Reward Hacking", "Alignment", "Jailbreak"] },
+
+    { term: "Superposition", cat: "interpretability",
+      def: "When a network stores more distinct features than it has neurons by packing several concepts into overlapping directions in activation space.",
+      why: "It's the main reason single neurons are so hard to read, and the motivation behind tools like sparse autoencoders.",
+      rel: ["Mechanistic Interpretability", "Sparse Autoencoder", "Probing"] },
+
+    { term: "Deceptive Alignment", cat: "alignment",
+      def: "A model that acts aligned during training because it has worked out it's being watched, while intending to pursue a different goal once it's deployed and the pressure is off.",
+      why: "The worst case for evaluations: the system passes every test precisely because passing is what keeps it around.",
+      rel: ["Mesa-Optimization", "Scalable Oversight", "Chain-of-Thought Faithfulness"] },
+
+    { term: "Goal Misgeneralization", cat: "alignment",
+      def: "When a model learns a goal that fits the training data but is the wrong one, then pursues it competently in new situations. Its capabilities generalize; its goal doesn't.",
+      why: "It fails even with a correct reward signal &mdash; the model simply latched onto the wrong regularity.",
+      rel: ["Alignment", "Distribution Shift", "Reward Hacking"] },
+
+    { term: "Scalable Oversight", cat: "alignment",
+      def: "Techniques for supervising a model on tasks too hard or too large for a human to check directly &mdash; using AI assistance, debate, or task decomposition to stretch human judgment further.",
+      why: "RLHF breaks down once outputs exceed what a rater can evaluate. This is the proposed way past that ceiling.",
+      rel: ["RLHF", "Constitutional AI", "Deceptive Alignment"] },
+
+    { term: "Constitutional AI", cat: "alignment",
+      def: "Training a model to critique and revise its own outputs against a written set of principles (a 'constitution'), cutting reliance on human labels for harmlessness.",
+      why: "It scales oversight and makes the values steering the model explicit and editable instead of buried in labels.",
+      rel: ["RLHF", "Scalable Oversight", "Value Learning"] },
+
+    { term: "Instrumental Convergence", cat: "alignment",
+      def: "The tendency of goal-directed agents to chase the same sub-goals &mdash; self-preservation, gathering resources, resisting shutdown &mdash; whatever their final goal, because those help with almost anything.",
+      why: "Explains why even a benign-looking objective can produce power-seeking behavior as capability rises.",
+      rel: ["Corrigibility", "Alignment"] },
+
+    { term: "Sycophancy", cat: "alignment",
+      def: "A model telling you what you want to hear rather than what's true, because agreeable answers scored better during training.",
+      why: "A visible, everyday artifact of optimizing for human approval over correctness.",
+      rel: ["RLHF", "Reward Hacking"] },
+
+    { term: "Goodhart's Law", cat: "alignment",
+      def: "'When a measure becomes a target, it ceases to be a good measure.' Push hard on any proxy and it stops tracking the thing you actually cared about.",
+      why: "The one-sentence root of reward hacking and specification gaming.",
+      rel: ["Reward Hacking", "Alignment"] },
+
+    { term: "Value Learning", cat: "alignment",
+      def: "Getting an AI to infer what humans actually value from their behavior, feedback, or comparisons, instead of being handed an explicit reward function.",
+      why: "Human values are too messy and context-dependent to write down, so the system has to learn them.",
+      rel: ["RLHF", "Constitutional AI", "Alignment"] },
+
+    { term: "Sparse Autoencoder", cat: "interpretability", aka: "SAE",
+      def: "A tool that decomposes a model's tangled activations into a large dictionary of sparse, mostly-interpretable features &mdash; a leading approach to undoing superposition.",
+      why: "Turns 'this neuron is uninterpretable' into 'this feature means X', making internals legible.",
+      rel: ["Superposition", "Mechanistic Interpretability", "Circuit"] },
+
+    { term: "Circuit", cat: "interpretability",
+      def: "A small sub-network of connected components that together implement a specific, human-describable behavior &mdash; for example, detecting that a token earlier in the text is about to repeat.",
+      why: "It's the unit of explanation in mechanistic interpretability: the thing you actually reverse-engineer.",
+      rel: ["Mechanistic Interpretability", "Sparse Autoencoder"] },
+
+    { term: "Activation Steering", cat: "interpretability",
+      def: "Nudging a model's behavior at inference time by adding a direction to its internal activations, rather than retraining &mdash; dialing, say, honesty up or a topic down.",
+      why: "It shows abstract concepts live as directions you can manipulate, and gives a cheap control lever.",
+      rel: ["Mechanistic Interpretability", "Probing"] },
+
+    { term: "Chain-of-Thought Faithfulness", cat: "interpretability",
+      def: "Whether a model's stated step-by-step reasoning actually reflects the computation behind its answer, or is a plausible story told after the decision was already made.",
+      why: "If the reasoning is unfaithful, you can't trust it to reveal a bad process you were hoping to catch.",
+      rel: ["Mechanistic Interpretability", "Deceptive Alignment"] },
+
+    { term: "Grokking", cat: "interpretability",
+      def: "When a model trained well past the point of memorizing suddenly generalizes, snapping to a real algorithm long after the training loss had already flattened.",
+      why: "It shows learning dynamics are stranger than the loss curve suggests, and gives interpretability a clean case to study.",
+      rel: ["Mechanistic Interpretability", "Circuit"] },
+
+    { term: "Prompt Injection", cat: "robustness",
+      def: "An attack where malicious instructions hidden in content the model reads &mdash; a web page, an email, a document &mdash; hijack its behavior and override the developer's instructions.",
+      why: "The defining security hole for LLM agents that browse and use tools: data the model reads becomes commands it follows.",
+      rel: ["Jailbreak", "Adversarial Agent", "Guardrails"] },
+
+    { term: "Data Poisoning", cat: "robustness",
+      def: "Corrupting a model's training data so it learns an attacker-chosen behavior &mdash; a hidden bias or trigger baked in before the model ever ships.",
+      why: "A supply-chain attack on the model itself, and very hard to spot after training.",
+      rel: ["Backdoor Attack", "Adversarial Example"] },
+
+    { term: "Out-of-Distribution Detection", cat: "robustness", aka: "OOD Detection",
+      def: "Getting a system to recognize when an input is unlike anything it was trained on, so it can abstain or defer instead of guessing with false confidence.",
+      why: "Knowing when it doesn't know is a prerequisite for deploying a model safely.",
+      rel: ["Distribution Shift", "Adversarial Example"] },
+
+    { term: "Backdoor Attack", cat: "robustness", aka: "Trojan",
+      def: "A hidden trigger planted in a model so it behaves normally until it sees a specific secret input, then switches to attacker-controlled behavior.",
+      why: "It can survive fine-tuning and pass every ordinary test, which makes trusting third-party model weights risky.",
+      rel: ["Data Poisoning", "Deceptive Alignment"] },
+
+    { term: "Guardrails", cat: "robustness",
+      def: "Runtime checks wrapped around a model &mdash; input and output filters, classifiers, hard rules &mdash; that block unsafe content the model itself might still produce.",
+      why: "Defense in depth: a safety layer that doesn't depend on the model being perfectly aligned on its own.",
+      rel: ["Jailbreak", "Red Teaming", "Prompt Injection"] },
+
+    { term: "Frontier Model", cat: "governance",
+      def: "The most capable general-purpose models at the edge of what has been built, whose new capabilities and risks aren't yet well understood.",
+      why: "It's the category most safety policy, evals, and reporting rules are actually written to target.",
+      rel: ["Compute Threshold", "Dangerous Capability Evals"] },
+
+    { term: "Model Card", cat: "governance",
+      def: "A short standardized document shipped with a model describing its intended use, training, evaluations, and known limitations.",
+      why: "Basic transparency &mdash; it lets others judge where a model is and isn't safe to use.",
+      rel: ["Third-Party Auditing", "Structured Access"] },
+
+    { term: "Third-Party Auditing", cat: "governance",
+      def: "Independent outside experts evaluating a model or a developer's safety practices, instead of everyone trusting the developer's own word.",
+      why: "Self-reported safety has an obvious conflict of interest; external audit is the check on it.",
+      rel: ["Dangerous Capability Evals", "Red Teaming"] },
+
+    { term: "Compute Threshold", cat: "governance",
+      def: "A training-compute line (for example, 10^25 FLOP) above which extra oversight, reporting, or regulation kicks in.",
+      why: "A concrete, countable trigger for rules &mdash; though a crude proxy for a model's actual capability.",
+      rel: ["Compute Governance", "Frontier Model"] },
+
+    { term: "Watermarking", cat: "governance",
+      def: "Embedding a hard-to-remove statistical signal in AI-generated text or images so the content can later be identified as machine-made.",
+      why: "One tool against mass disinformation and undisclosed AI content flooding the information space.",
+      rel: ["Model Card"] },
+
+    { term: "Structured Access", cat: "governance",
+      def: "Giving people controlled use of a model through an API or gated interface instead of releasing the weights, so the developer keeps the ability to monitor and revoke.",
+      why: "A middle path between fully open and fully closed that preserves the safety levers.",
+      rel: ["Model Card", "Compute Governance"] },
+
+    { term: "Cooperative AI", cat: "multiagent",
+      def: "A research field on building AI that cooperates well &mdash; with humans and with other AIs &mdash; and on improving the tools societies use to solve coordination problems.",
+      why: "Most real harm and benefit comes from interaction, not from one agent alone. It's the frame the Cooperative AI Foundation works in.",
+      rel: ["Multi-Agent Safety", "Social Dilemma", "Zero-Shot Coordination"] },
+
+    { term: "Social Dilemma", cat: "multiagent",
+      def: "A situation where what's best for each individual agent leads to a worse outcome for everyone if they all follow it &mdash; the tragedy of the commons, in agent form.",
+      why: "The core tension cooperative AI has to solve: perfectly aligned individuals can still produce a bad group result.",
+      rel: ["Cooperative AI", "Coordination Failure", "Emergent Collusion"] },
+
+    { term: "Coordination Failure", cat: "multiagent",
+      def: "When agents who would all be better off cooperating fail to, because they can't communicate, can't trust each other, or can't agree on which plan to pick.",
+      why: "A large share of multi-agent harm is competent agents failing to line up, not any single one misbehaving.",
+      rel: ["Social Dilemma", "Zero-Shot Coordination", "Cooperative AI"] },
+
+    { term: "Principal-Agent Problem", cat: "multiagent",
+      def: "When one party (the agent) acts on behalf of another (the principal) but has different incentives or better information, and quietly ends up serving itself.",
+      why: "The classic frame for AI delegation: you hand off a task and can't fully see what the agent actually did with it.",
+      rel: ["Information Asymmetry", "Alignment"] },
+
+    { term: "Adversarial Agent", cat: "multiagent",
+      def: "An agent inside a multi-agent system that is actively trying to subvert it &mdash; extracting private data, manipulating other agents, or breaking coordination from within.",
+      why: "A core multi-agent threat model: one bad actor embedded in a group of otherwise-aligned agents.",
+      rel: ["Information Asymmetry", "Prompt Injection", "Multi-Agent Safety"] },
+
+    { term: "Zero-Shot Coordination", cat: "multiagent",
+      def: "Getting agents to cooperate with partners they've never trained with &mdash; including humans &mdash; instead of only with copies of themselves.",
+      why: "Agents that only coordinate with their own training partners are useless in the messy real world. This is the harder, realistic bar.",
+      rel: ["Coordination Failure", "Cooperative AI"] },
+  ];
+
+  ENTRIES.sort((a, b) => a.term.localeCompare(b.term));
+
+  const listEl = document.getElementById("list");
+  const chipsEl = document.getElementById("chips");
+  const countEl = document.getElementById("count");
+  const emptyEl = document.getElementById("empty");
+  const qEl = document.getElementById("q");
+
+  let activeCat = "all";
+
+  // build entries
+  const nodes = ENTRIES.map((e, i) => {
+    const meta = CATS[e.cat];
+    const li = document.createElement("li");
+    li.className = "entry";
+    li.style.animationDelay = Math.min(i * 22, 260) + "ms";
+    li.dataset.cat = e.cat;
+    li.dataset.text = (e.term + " " + (e.aka || "") + " " + e.def + " " + e.why).toLowerCase();
+
+    const rel = e.rel.map(r =>
+      `<button class="rlink" data-term="${r.replace(/"/g,'&quot;')}">${r}</button>`).join("");
+
+    li.innerHTML = `
+      <div class="entry-head">
+        <div class="term">${e.term}${e.aka ? ` <span class="aka">/ ${e.aka}</span>` : ""}</div>
+        <span class="tag" style="--tc:${meta.c}"><span class="swatch"></span>${meta.label}</span>
+      </div>
+      <p class="def">${e.def}</p>
+      <div class="why"><b>Why it matters</b>${e.why}</div>
+      <div class="related"><span class="rlabel">See also</span>${rel}</div>`;
+    return li;
+  });
+  nodes.forEach(n => listEl.appendChild(n));
+
+  // build chips
+  function makeChip(key, label, c, n) {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.dataset.cat = key;
+    b.setAttribute("aria-pressed", key === "all" ? "true" : "false");
+    b.innerHTML = (c ? `<span class="swatch" style="--c:${c}"></span>` : "") +
+                  `${label} <span class="n">${n}</span>`;
+    b.addEventListener("click", () => { activeCat = key; syncChips(); render(); });
+    return b;
+  }
+  chipsEl.appendChild(makeChip("all", "All", null, ENTRIES.length));
+  Object.entries(CATS).forEach(([k, v]) => {
+    const n = ENTRIES.filter(e => e.cat === k).length;
+    chipsEl.appendChild(makeChip(k, v.label, v.c, n));
+  });
+  function syncChips() {
+    chipsEl.querySelectorAll(".chip").forEach(c =>
+      c.setAttribute("aria-pressed", c.dataset.cat === activeCat ? "true" : "false"));
+  }
+
+  // related-term links
+  listEl.addEventListener("click", ev => {
+    const btn = ev.target.closest(".rlink");
+    if (!btn) return;
+    qEl.value = btn.dataset.term;
+    activeCat = "all";
+    syncChips();
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // filter + render
+  function render() {
+    const q = qEl.value.trim().toLowerCase();
+    let shown = 0;
+    nodes.forEach(n => {
+      const okCat = activeCat === "all" || n.dataset.cat === activeCat;
+      const okText = !q || n.dataset.text.includes(q);
+      const show = okCat && okText;
+      n.classList.toggle("hidden", !show);
+      if (show) shown++;
+    });
+    countEl.textContent = shown === ENTRIES.length
+      ? `${shown} terms`
+      : `${shown} of ${ENTRIES.length} terms`;
+    emptyEl.classList.toggle("show", shown === 0);
+  }
+
+  qEl.addEventListener("input", render);
+  render();
+</script>
+
+</body>
+</html>
